@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Metrics store and runtime sandbox (do NOT commit)
+results/*.db
+results/dut_root/
+results/transcripts/
+results/can_logs/
+results/*.json
+results/junit.xml
+results/hil_metrics.prom
+results/flash_*.log
+
+# Native build artifacts
+native/bootprobe
+native/can_node
+native/*.o
+
+# Keep the baseline and generated reports committed
+!reports/
+!reports/baseline.json
+!reports/release_readiness.md
+!reports/release_readiness.json

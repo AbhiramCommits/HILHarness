@@ -1,0 +1,45 @@
+# Fully simulated rig: zero physical hardware required.
+# The simulated target runs as a subprocess; serial is a PTY pair; CAN falls
+# back to python-can's in-process `virtual` bus when vcan is unavailable.
+name: "infotainment-sim"
+target: sim
+
+power:
+  driver: sim          # sim | gpio
+  off_ms: 1500
+
+console:
+  driver: pty          # pty | serial
+  baud: 115200
+
+can:
+  interface: vcan0     # vcan0 | can0 | virtual
+  bitrate: 500000
+  dbc_path: configs/infotainment.dbc
+  backend: auto        # auto | socketcan | virtual
+
+net:
+  host: 127.0.0.1
+  port: 9000
+  timeout_s: 5.0
+  retries: 3
+  backoff_s: 0.2
+
+image_path: configs/rootfs.img
+image_sha256: null     # null -> read configs/rootfs.img.sha256 sidecar
+
+expected_drivers:
+  - display
+  - audio
+  - bt
+  - wifi
+  - usb
+  - camera
+
+gates:
+  max_boot_ms: 15000
+  max_driver_init_ms: 1500
+  max_frame_loss_pct: 1.0
+  min_fault_detection_pct: 80
+
+results_dir: results

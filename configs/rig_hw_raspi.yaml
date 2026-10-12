@@ -1,0 +1,62 @@
+# Real hardware rig: Raspberry Pi 4 head unit on a relay + USB-serial + CAN.
+#
+# Hardware bring-up:
+#   1. DUT power is switched by a relay on BCM GPIO17 (pin 11), active-low
+#      through a level-shifter/opto-isolated relay board. Wire relay COM to the
+#      DUT 5V rail; NC to the buck converter; the Pi drives the relay IN pin.
+#   2. DUT console is a CP210x/FTDI USB-UART on /dev/ttyUSB0 @ 115200 8N1.
+#   3. CAN is an MCP2515 (SPI) or a USB-CAN adapter brought up as can0 at
+#      500 kbit/s:
+#        sudo ip link set can0 up type can bitrate 500000
+#   4. DUT Ethernet is the Pi's other NIC / a USB-Ethernet adapter; the control
+#      daemon (simtarget installed on the DUT, or the real target agent) listens
+#      on 9000/tcp.
+#
+# Run:  hil flash --config configs/rig_hw_raspi.yaml --hw-command "dd if={image} of=/dev/sdb bs=4M conv=fsync"
+#       hil power-cycle --config configs/rig_hw_raspi.yaml
+name: "infotainment-raspi-hw"
+target: hw
+
+power:
+  driver: gpio         # use gpiozero OutputDevice on BCM pin
+  gpio_pin: 17
+  off_ms: 2000
+  active_high: false   # opto-isolated relay IN is active-low
+
+console:
+  driver: serial
+  device: /dev/ttyUSB0
+  baud: 115200
+  read_timeout_s: 8.0
+
+can:
+  interface: can0
+  bitrate: 500000
+  dbc_path: configs/infotainment.dbc
+  backend: auto
+
+net:
+  host: 192.168.10.20  # DUT control daemon
+  port: 9000
+  timeout_s: 5.0
+  retries: 3
+  backoff_s: 0.3
+
+image_path: configs/rootfs.img
+image_sha256: null
+
+expected_drivers:
+  - display
+  - audio
+  - bt
+  - wifi
+  - usb
+  - camera
+
+gates:
+  max_boot_ms: 18000
+  max_driver_init_ms: 2000
+  max_frame_loss_pct: 1.0
+  min_fault_detection_pct: 80
+
+results_dir: results
