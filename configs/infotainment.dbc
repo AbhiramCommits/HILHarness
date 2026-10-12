@@ -1,0 +1,103 @@
+VERSION "HILHarness infotainment CAN database v1"
+
+NS_ :
+    NS_DESC_
+    CM_
+    BA_DEF_
+    BA_
+    VAL_
+    CAT_DEF_
+    CAT_
+    FILTER
+    BA_DEF_DEF_
+    EV_DATA_
+    ENVVAR_DATA_
+    SGTYPE_
+    SGTYPE_VAL_
+    BA_DEF_SGTYPE_
+    BA_SGTYPE_
+    SIG_TYPE_REF_
+    VAL_TABLE_
+    SIG_GROUP_
+    SIG_VALTYPE_
+    SIGTYPE_VALTYPE_
+    BO_TX_BU_
+    BA_DEF_REL_
+    BA_REL_
+    BA_DEF_DEF_REL_
+    BU_SG_REL_
+    BU_EV_REL_
+    BU_BO_REL_
+    SG_MUL_VAL_
+
+BS_:
+
+BU_: DUT ECU_ADAS ECU_HVAC ECU_DISPLAY ECU_AUDIO ECU_BT TESTER
+
+BO_ 256 VEH_SPEED: 8 ECU_ADAS
+ SG_ VehicleSpeed : 0|16@1+ (0.01,0) [0|250] "km/h" ECU_HVAC,ECU_DISPLAY
+ SG_ GearPos : 16|4@1+ (1,0) [0|8] "" ECU_DISPLAY
+ SG_ BrakeActive : 20|1@1+ (1,0) [0|1] "" ECU_DISPLAY
+ SG_ ThrottlePos : 21|8@1+ (0.4,0) [0|100] "%" ECU_HVAC
+ SG_ EngineRpm : 29|16@1+ (0.25,0) [0|8000] "rpm" ECU_DISPLAY
+ SG_ MsgCounter : 45|4@1+ (1,0) [0|15] "" DUT
+
+BO_ 512 HVAC_STATUS: 8 ECU_HVAC
+ SG_ SetpointTemp : 0|8@1+ (0.5,0) [16|30] "degC" ECU_DISPLAY
+ SG_ CabinTemp : 8|8@1+ (0.5,0) [-10|50] "degC" DUT
+ SG_ FanSpeed : 16|4@1+ (1,0) [0|7] "" ECU_DISPLAY
+ SG_ ACOn : 20|1@1+ (1,0) [0|1] "" ECU_DISPLAY
+ SG_ RecircOn : 21|1@1+ (1,0) [0|1] "" ECU_DISPLAY
+ SG_ AirflowMode : 22|2@1+ (1,0) [0|3] "" ECU_DISPLAY
+
+BO_ 768 DISPLAY_STATUS: 8 ECU_DISPLAY
+ SG_ Brightness : 0|8@1+ (1,0) [0|100] "%" DUT
+ SG_ Theme : 8|2@1+ (1,0) [0|3] "" DUT
+ SG_ DayNightMode : 10|1@1+ (1,0) [0|1] "" DUT
+ SG_ BrightnessManual : 11|1@1+ (1,0) [0|1] "" DUT
+
+BO_ 1024 AUDIO_STATUS: 8 ECU_AUDIO
+ SG_ Volume : 0|7@1+ (1,0) [0|100] "" DUT
+ SG_ AudioSource : 7|3@1+ (1,0) [0|7] "" DUT
+ SG_ Muted : 10|1@1+ (1,0) [0|1] "" DUT
+ SG_ Balance : 11|8@1+ (1,-15) [-15|15] "" DUT
+ SG_ Fader : 19|8@1+ (1,-15) [-15|15] "" DUT
+
+BO_ 1280 BT_STATUS: 8 ECU_BT
+ SG_ BtState : 0|2@1+ (1,0) [0|3] "" DUT
+ SG_ PairedDevices : 2|4@1+ (1,0) [0|15] "" DUT
+ SG_ CallActive : 6|1@1+ (1,0) [0|1] "" DUT
+ SG_ CallDuration : 7|16@1+ (1,0) [0|65535] "s" DUT
+
+BO_ 1536 VEH_MUX: 8 ECU_ADAS
+ SG_ Mux M : 0|8@1+ (1,0) [0|3] "" DUT
+ SG_ SpeedSeq m0 : 8|8@1+ (1,0) [0|255] "" DUT
+ SG_ DebugSeq m1 : 16|16@1+ (1,0) [0|65535] "" DUT
+ SG_ AmbientLight m2 : 8|8@1+ (0.5,0) [0|100] "%" DUT
+
+BO_ 2015 DIAG_REQUEST: 8 TESTER
+ SG_ ServiceId : 0|8@1+ (1,0) [0|255] "" ECU_DISPLAY,ECU_AUDIO,ECU_BT
+ SG_ DidHigh : 8|8@1+ (1,0) [0|255] "" ECU_DISPLAY
+ SG_ DidLow : 16|8@1+ (1,0) [0|255] "" ECU_DISPLAY
+ SG_ RequestSeq : 24|8@1+ (1,0) [0|255] "" ECU_DISPLAY
+
+BO_ 2024 DIAG_RESPONSE: 8 ECU_DISPLAY
+ SG_ ResponseService : 0|8@1+ (1,0) [0|255] "" TESTER
+ SG_ DidHigh : 8|8@1+ (1,0) [0|255] "" TESTER
+ SG_ DidLow : 16|8@1+ (1,0) [0|255] "" TESTER
+ SG_ DataValue : 24|16@1+ (1,0) [0|65535] "" TESTER
+ SG_ ResponseSeq : 40|8@1+ (1,0) [0|255] "" TESTER
+
+CM_ BO_ 256 "Vehicle dynamics: speed, gear, brake, throttle, engine speed.";
+CM_ BO_ 512 "HVAC status: setpoint, cabin temperature, fan, airflow.";
+CM_ BO_ 768 "Head-unit display status: brightness, theme, day/night.";
+CM_ BO_ 1024 "Audio status: master volume, source, mute, balance/fader.";
+CM_ BO_ 1280 "Bluetooth status: state machine, paired devices, call.";
+CM_ BO_ 1536 "Multiplexed vehicle frame: mux switch selects payload.";
+CM_ BO_ 2015 "UDS-style diagnostic request (broadcast 0x7DF).";
+CM_ BO_ 2024 "Diagnostic response from display ECU (0x7E8).";
+
+VAL_ 256 GearPos 0 "Park" 1 "Reverse" 2 "Neutral" 3 "Drive" 4 "Sport" 5 "Low" 6 "Manual" ;
+VAL_ 512 AirflowMode 0 "Face" 1 "FaceFloor" 2 "Floor" 3 "Defrost" ;
+VAL_ 1024 AudioSource 0 "Off" 1 "Radio" 2 "USB" 3 "Bluetooth" 4 "AUX" 5 "CarPlay" 6 "AndroidAuto" 7 "Reserved" ;
+VAL_ 1280 BtState 0 "Off" 1 "Discoverable" 2 "Connected" 3 "Streaming" ;

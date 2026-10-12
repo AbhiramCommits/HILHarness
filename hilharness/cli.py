@@ -10,8 +10,10 @@ import time
 import click
 
 from .config import RigConfig
+from .drivers.canbus import CanBus
 from .rig import Rig
 from .validators.boot import BootResult, validate_boot
+from .validators.can import detect_faults
 
 DEFAULT_CONFIG = "configs/rig_sim.yaml"
 
@@ -144,6 +146,97 @@ def boot(config: str, cycles: int, faults: str, boot_timeout: float) -> None:
     click.echo(f"wall clock  : {wall:.2f} s")
     if passed != len(results):
         raise SystemExit(1)
+
+
+def _start_can_node(bus: CanBus, faults_spec: dict):
+    """Start the Python node on a virtual bus, or the C node on SocketCAN."""
+    if bus.backend == "socketcan":
+        import shutil
+        import subprocess
+
+        c_node = shutil.which("can_node") or "native/can_node"
+        args = [c_node, "--iface", bus.cfg.interface]
+        for key, val in faults_spec.items():
+            if val:
+                args += [f"--{key.replace('_', '-')}", str(val)]
+        return subprocess.Popen(args)
+    from simtarget.can_node import CanFaults, PyCanNode
+
+    node = PyCanNode(bus.channel, bus.cfg.dbc_path, faults=CanFaults(**faults_spec))
+    node.start()
+    return node
+
+
+@main.command("can-test")
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--duration", default=30.0, show_default=True, type=float)
+@click.option("--drop-rate", default=0.0, type=float, help="Inject frame drops (0..1)")
+@click.option("--stale-signal", default=None, help="Freeze a signal value")
+@click.option("--bad-dlc", default=None, type=int, help="Truncate frames to this DLC")
+@click.option("--out-of-range", default=None, help="Push a signal out of its DBC range")
+@click.option("--silence-ms", default=0, type=int, help="Silence the bus for this long")
+def can_test(
+    config: str,
+    duration: float,
+    drop_rate: float,
+    stale_signal: str | None,
+    bad_dlc: int | None,
+    out_of_range: str | None,
+    silence_ms: int,
+) -> None:
+    """Generate and decode CAN traffic; report loss, jitter and faults."""
+    cfg = _load(config)
+    bus = CanBus(cfg.can)
+    faults = {
+        "drop_rate": drop_rate,
+        "stale_signal": stale_signal,
+        "bad_dlc": bad_dlc,
+        "out_of_range": out_of_range,
+        "silence_ms": silence_ms,
+    }
+    click.echo(f"backend    : {bus.backend} (channel {bus.channel})")
+    node = _start_can_node(bus, faults)
+    try:
+        time.sleep(0.3)
+        click.echo(f"streaming  : {duration:.1f}s ...")
+        frames = bus.stream(duration)
+    finally:
+        if hasattr(node, "stop"):
+            node.stop()
+        elif hasattr(node, "terminate"):
+            node.terminate()
+
+    by_name: dict[str, int] = {}
+    for f in frames:
+        name = f.message_name or f"0x{f.arbitration_id:X}"
+        by_name[name] = by_name.get(name, 0) + 1
+    tx = getattr(node, "tx_counts", {})
+    total_tx = sum(tx.values()) if isinstance(tx, dict) else len(frames)
+
+    click.echo(f"frames rx  : {len(frames)}")
+    click.echo(f"frames tx  : {total_tx}")
+    for name, count in sorted(by_name.items()):
+        click.echo(f"  {name:16} {count:>6} rx")
+
+    loss = bus.sequence_loss_stats(frames)
+    click.echo(
+        f"frame loss : {loss['loss_pct']:.3f}% "
+        f"({loss['lost']} lost / {loss['delivered'] + loss['lost']} expected)"
+    )
+
+    veh = [f for f in frames if f.arbitration_id == 0x100]
+    if len(veh) >= 2:
+        ts = sorted(f.timestamp for f in veh)
+        periods = [(b - a) * 1000.0 for a, b in zip(ts, ts[1:], strict=False)]
+        mean = statistics.fmean(periods)
+        jitter = max(abs(p - mean) for p in periods)
+        click.echo(f"period     : mean {mean:.2f} ms, jitter +/-{jitter:.2f} ms (n={len(ts)})")
+
+    findings = detect_faults(frames, db=bus.dbc)
+    click.echo(f"faults     : {len(findings)} finding(s)")
+    for f in findings:
+        click.echo(f"  {f.kind:18} {f.message:14} {f.detail}")
+    bus.close()
 
 
 @main.command("show-config")
