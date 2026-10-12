@@ -52,7 +52,7 @@ class SimRelay(PowerRelay):
         slave_fd: int | None = None,
         sandbox: Path | None = None,
         faults: str = "",
-        seed: int = 1234,
+        seed: int = -1,
         jitter: float = 4.0,
         net_port: int = 0,
         net_host: str = "127.0.0.1",

@@ -1,12 +1,13 @@
-# Native components for HILHarness.
-# Placeholder during Step 1; bootprobe.c and can_node.c arrive in Steps 2-3.
+# Native components for HILHarness (Step 2: bootprobe).
 CC      ?= cc
 CFLAGS  ?= -Wall -Wextra -Werror -O2
 
 .PHONY: all clean
 
-all:
-	@echo "native: no components yet"
+all: bootprobe
+
+bootprobe: bootprobe.c
+	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	@true
+	rm -f bootprobe

@@ -1,0 +1,31 @@
+[    0.000000] hil-stage bootloader begin
+[    0.000000] U-Boot 2023.07 (Jun 12 2023 - 09:41:02 +0000)
+[    0.000000] SoC: Broadcom BCM2711, DRAM: 4 GiB
+[    0.859481] hil-stage kernel begin
+[    0.859481] Starting kernel ...
+[    1.099981] Linux version 5.15.0-rpi (domk@build) #1 SMP PREEMPT
+[    1.340481] Memory: 3841024K/4050944K available
+[    1.580982] rcu: Hierarchical RCU implementation.
+[    1.821482] cpufreq: cpufreq-dt: registered
+[    2.061982] mmc0: SDHCI controller on fe300000.mmcnr [fe300000.mmcnr] using DMA
+[    2.302482] usbcore: registered new interface driver usbfs
+[    2.542983] vchiq: vchiq_init_state: slot_zero = (ptrval)
+[    2.783483] bcm2835-v4l2: V4L2 device registered as video0
+[    3.023983] hil-stage userspace begin
+[    3.023983] systemd[1]: Reached target Basic System.
+[    3.421463] hil-driver display probe 137.480 ms
+[    3.421463] display: subsystem ready
+[    3.626813] hil-driver audio probe 205.350 ms
+[    3.626813] audio: subsystem ready
+[    3.963056] hil-driver bt probe 336.243 ms
+[    3.963056] bt: subsystem ready
+[    4.510689] hil-driver wifi probe 547.633 ms
+[    4.510689] wifi: subsystem ready
+[    4.510689] hil-driver usb probe begin
+[    7.510689] hil-driver usb probe timeout
+[    7.510689] usb: probe timed out after 3000 ms
+[    7.907141] hil-driver camera probe 396.452 ms
+[    7.907141] camera: subsystem ready
+[    8.087141] hil-stage userspace ready
+[    8.087141] systemd[1]: Reached target Multi-User System.
+[    8.087141] hil: boot complete in 8087 ms

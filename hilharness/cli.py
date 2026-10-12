@@ -3,14 +3,30 @@
 from __future__ import annotations
 
 import json
+import statistics
 import sys
+import time
 
 import click
 
 from .config import RigConfig
 from .rig import Rig
+from .validators.boot import BootResult, validate_boot
 
 DEFAULT_CONFIG = "configs/rig_sim.yaml"
+
+
+def _pctl(values: list[float], q: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+    idx = q * (len(ordered) - 1)
+    lo = int(idx)
+    frac = idx - lo
+    hi = min(lo + 1, len(ordered) - 1)
+    return ordered[lo] + (ordered[hi] - ordered[lo]) * frac
 
 
 def _load(config: str) -> RigConfig:
@@ -72,6 +88,62 @@ def power_cycle(config: str, faults: str) -> None:
     finally:
         rig.close()
     click.echo("power cycle OK")
+
+
+@main.command()
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--cycles", default=10, show_default=True, type=int)
+@click.option("--faults", default="", help="Simulated fault spec (sim target only)")
+@click.option("--boot-timeout", default=15.0, show_default=True, type=float)
+def boot(config: str, cycles: int, faults: str, boot_timeout: float) -> None:
+    """Flash, power-cycle and validate N consecutive boots."""
+    cfg = _load(config)
+    cfg.ensure_dirs()
+    rig = Rig(cfg, faults=faults)
+    results: list[BootResult] = []
+    wall0 = time.perf_counter()
+    try:
+        flasher = rig.flasher()
+        click.echo(
+            f"{'cycle':>5}  {'clean':>5}  {'boot_ms':>9}  {'missing':<12} {'failed':<12} src"
+        )
+        for i in range(1, cycles + 1):
+            flash = flasher.flash(cfg.image_path)
+            if not flash.verified:
+                click.echo(f"  flash verify FAILED on cycle {i}", err=True)
+                raise SystemExit(3)
+            rig.power_cycle()
+            reader = rig.console(cycle=i)
+            reader.capture = ""
+            try:
+                reader.read_until(r"hil-stage userspace ready", timeout=boot_timeout)
+            except TimeoutError:
+                reader.drain(quiet_for=0.5, max_total=2.0)
+            res = validate_boot(reader.capture, cfg.expected_drivers)
+            results.append(res)
+            click.echo(
+                f"{i:>5}  {str(res.clean_bootchain):>5}  {res.total_boot_ms:>9.1f}  "
+                f"{','.join(res.missing_drivers):<12} "
+                f"{','.join(res.failed_drivers + res.timeout_drivers):<12} {res.source}"
+            )
+            rig.power_off()
+    finally:
+        rig.close()
+
+    wall = time.perf_counter() - wall0
+    totals = [r.total_boot_ms for r in results]
+    passed = sum(1 for r in results if r.clean_bootchain)
+    click.echo("-" * 60)
+    click.echo(f"cycles      : {len(results)}")
+    click.echo(f"clean boots : {passed}/{len(results)}")
+    if totals:
+        click.echo(f"boot p50    : {_pctl(totals, 0.50):.1f} ms")
+        click.echo(f"boot p95    : {_pctl(totals, 0.95):.1f} ms")
+        click.echo(f"boot max    : {max(totals):.1f} ms")
+        click.echo(f"boot mean   : {statistics.fmean(totals):.1f} ms")
+    click.echo(f"wall clock  : {wall:.2f} s")
+    if passed != len(results):
+        raise SystemExit(1)
 
 
 @main.command("show-config")

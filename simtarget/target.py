@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import signal
 import socket
 import socketserver
@@ -222,7 +223,7 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="simtarget")
     ap.add_argument("--faults", default=os.environ.get("HIL_FAULT", ""))
-    ap.add_argument("--seed", type=int, default=int(os.environ.get("HIL_SEED", "1234")))
+    ap.add_argument("--seed", type=int, default=int(os.environ.get("HIL_SEED", "-1")))
     ap.add_argument("--jitter", type=float, default=float(os.environ.get("HIL_JITTER", "4.0")))
     ap.add_argument(
         "--line-delay-ms",
@@ -232,6 +233,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--net-port", type=int, default=int(os.environ.get("HIL_NET_PORT", "0")))
     ap.add_argument("--net-host", default=os.environ.get("HIL_NET_HOST", "127.0.0.1"))
     args = ap.parse_args(argv)
+
+    seed = args.seed if args.seed >= 0 else random.randrange(1, 2**31)
 
     port = args.net_port
     if port == 0:
@@ -244,7 +247,7 @@ def main(argv: list[str] | None = None) -> int:
 
     run(
         Faults.from_spec(args.faults),
-        args.seed,
+        seed,
         args.jitter,
         args.line_delay_ms,
         port,
