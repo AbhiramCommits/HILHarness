@@ -239,6 +239,89 @@ def can_test(
     bus.close()
 
 
+def _parse_junit(path: str) -> dict:
+    import xml.etree.ElementTree as ET
+
+    tree = ET.parse(path)
+    root = tree.getroot()
+    suites = root.findall("testsuite") or [root]
+    cases = []
+    tests = failures = errors = skipped = 0
+    for suite in suites:
+        tests += int(suite.get("tests", 0))
+        failures += int(suite.get("failures", 0))
+        errors += int(suite.get("errors", 0))
+        skipped += int(suite.get("skipped", 0))
+        for case in suite.findall("testcase"):
+            status = "passed"
+            message = ""
+            if case.find("failure") is not None:
+                status = "failed"
+                message = case.find("failure").get("message", "")[:200]
+            elif case.find("error") is not None:
+                status = "error"
+                message = case.find("error").get("message", "")[:200]
+            elif case.find("skipped") is not None:
+                status = "skipped"
+            cases.append(
+                {
+                    "name": f"{case.get('classname', '')}::{case.get('name', '')}",
+                    "status": status,
+                    "duration_s": float(case.get("time", 0.0)),
+                    "message": message,
+                }
+            )
+    passed = tests - failures - errors - skipped
+    return {
+        "tests": tests,
+        "passed": passed,
+        "failed": failures,
+        "errors": errors,
+        "skipped": skipped,
+        "pass_rate": round(100.0 * passed / tests, 2) if tests else 0.0,
+        "time_s": round(float(root.get("time", 0.0) or (suites[0].get("time", 0.0))), 3),
+        "cases": cases,
+    }
+
+
+@main.command()
+@click.option(
+    "--suite",
+    type=click.Choice(["all", "boot", "can", "io"]),
+    default="all",
+    show_default=True,
+)
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--markers", default="hil and sim", show_default=True)
+@click.option("--junit", default="results/junit.xml", show_default=True)
+@click.option("--json-out", default="results/hil_results.json", show_default=True)
+def run(suite: str, config: str, markers: str, junit: str, json_out: str) -> None:
+    """Run the pytest HIL suites headlessly and write junit + JSON results."""
+    from pathlib import Path
+
+    import pytest
+
+    Path(junit).parent.mkdir(parents=True, exist_ok=True)
+    target = "tests" if suite == "all" else f"tests/suite_{suite}"
+    args = ["-q", "-m", markers, "--config", config, f"--junitxml={junit}", target]
+    click.echo(f"hil run: suite={suite} markers={markers!r} -> {target}")
+    code = pytest.main(args)
+
+    results = {"suite": suite, "markers": markers, "exit_code": int(code)}
+    if Path(junit).exists():
+        results.update(_parse_junit(junit))
+    with open(json_out, "w", encoding="utf-8") as fh:
+        json.dump(results, fh, indent=2)
+    click.echo(
+        f"results    : {results.get('passed', 0)} passed, {results.get('failed', 0)} failed, "
+        f"{results.get('errors', 0)} errors, {results.get('skipped', 0)} skipped "
+        f"(pass rate {results.get('pass_rate', 0.0)}%)"
+    )
+    click.echo(f"junit      : {junit}")
+    click.echo(f"json       : {json_out}")
+    raise SystemExit(code)
+
+
 @main.command("show-config")
 @click.option("--config", default=DEFAULT_CONFIG, show_default=True)
 def show_config(config: str) -> None:

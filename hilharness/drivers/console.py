@@ -147,6 +147,9 @@ class ConsoleShell:
         self.prompt = prompt
 
     def run(self, cmd: str, timeout: float = 5.0) -> str:
+        # Flush any pending output (e.g. the login banner) so the response we
+        # return belongs to this command only.
+        self.reader.drain(quiet_for=0.15, max_total=1.0)
         self.reader.write(cmd + "\n")
         return self.reader.read_until(self.prompt, timeout=timeout, reset=True)
 

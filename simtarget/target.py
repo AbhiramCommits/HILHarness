@@ -196,11 +196,17 @@ def run(
         sys.stdout.flush()
         if line_delay_ms > 0:
             time.sleep(line_delay_ms / 1000.0)
-    sys.stdout.write("hil login: ")
+    sys.stdout.write("hil login: \n")
+    sys.stdout.write("hil$ ")
     sys.stdout.flush()
 
-    server = ControlServer((net_host, net_port), ControlHandler)
-    threading.Thread(target=server.serve_forever, daemon=True).start()
+    server = None
+    try:
+        server = ControlServer((net_host, net_port), ControlHandler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+    except OSError as exc:
+        sys.stderr.write(f"simtarget: control server unavailable on {net_host}:{net_port}: {exc}\n")
+        sys.stderr.flush()
 
     threading.Thread(target=_console_loop, daemon=True).start()
 

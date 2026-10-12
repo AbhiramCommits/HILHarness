@@ -21,10 +21,11 @@ from .drivers.power import PowerRelay, build_power
 
 
 class Rig:
-    def __init__(self, cfg: RigConfig, faults: str | None = None) -> None:
+    def __init__(self, cfg: RigConfig, faults: str | None = None, use_net: bool = True) -> None:
         self.cfg = cfg
         cfg.ensure_dirs()
         self.faults = faults if faults is not None else os.environ.get("HIL_FAULT", "")
+        self.use_net = use_net
         self.master_fd: int | None = None
         self.slave_fd: int | None = None
 
@@ -38,7 +39,7 @@ class Rig:
             slave_fd=self.slave_fd,
             sandbox=cfg.sandbox,
             faults=self.faults,
-            net_port=cfg.net.port if cfg.is_sim else 0,
+            net_port=cfg.net.port if (cfg.is_sim and use_net) else 0,
             net_host=cfg.net.host,
         )
         self._console: ConsoleReader | None = None
@@ -89,6 +90,10 @@ class Rig:
 
     def power_off(self) -> None:
         self.relay.off()
+
+    def target_pid(self) -> int | None:
+        proc = getattr(self.relay, "proc", None)
+        return proc.pid if proc is not None and proc.poll() is None else None
 
     def wait_alive(self, timeout: float = 5.0) -> bool:
         deadline = time.monotonic() + timeout
