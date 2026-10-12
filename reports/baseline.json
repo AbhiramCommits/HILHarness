@@ -1,0 +1,39 @@
+{
+  "created_at": "2026-10-12T20:33:17+00:00",
+  "run_id": 1,
+  "rig": "infotainment-sim",
+  "metrics": {
+    "boot_ms_p95": {
+      "value": 5352.07,
+      "higher_is_better": false
+    },
+    "driver_init_ms_p95": {
+      "value": 546.45165,
+      "higher_is_better": false
+    },
+    "can_frame_loss_pct": {
+      "value": 0.0,
+      "higher_is_better": false
+    },
+    "fault_detection_pct": {
+      "value": 100.0,
+      "higher_is_better": true
+    },
+    "cpu_pct_max": {
+      "value": 173.9,
+      "higher_is_better": false
+    },
+    "rss_mb_max": {
+      "value": 50.1875,
+      "higher_is_better": false
+    },
+    "suite_pass_rate": {
+      "value": 100.0,
+      "higher_is_better": true
+    },
+    "clean_boot_rate": {
+      "value": 100.0,
+      "higher_is_better": true
+    }
+  }
+}

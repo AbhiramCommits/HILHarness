@@ -1,0 +1,905 @@
+{
+  "generated_at": "2026-10-12T20:33:17+00:00",
+  "rig": "infotainment-sim",
+  "target": "sim",
+  "run_id": 1,
+  "verdict": "GO",
+  "gates_ok": true,
+  "regression_pct": 10.0,
+  "regressions": [],
+  "metrics": [
+    {
+      "key": "boot_ms_p95",
+      "label": "Boot time p95",
+      "unit": "ms",
+      "measured": 5352.07,
+      "higher_is_better": false,
+      "gate_threshold": 15000.0,
+      "gate_op": "<=",
+      "gate_pass": true,
+      "baseline": 5352.07,
+      "delta_pct": 0.0
+    },
+    {
+      "key": "driver_init_ms_p95",
+      "label": "Driver init p95",
+      "unit": "ms",
+      "measured": 546.4516,
+      "higher_is_better": false,
+      "gate_threshold": 1500.0,
+      "gate_op": "<=",
+      "gate_pass": true,
+      "baseline": 546.45165,
+      "delta_pct": 0.0
+    },
+    {
+      "key": "can_frame_loss_pct",
+      "label": "CAN frame loss (max)",
+      "unit": "%",
+      "measured": 0.0,
+      "higher_is_better": false,
+      "gate_threshold": 1.0,
+      "gate_op": "<=",
+      "gate_pass": true,
+      "baseline": 0.0,
+      "delta_pct": null
+    },
+    {
+      "key": "fault_detection_pct",
+      "label": "Fault detection rate",
+      "unit": "%",
+      "measured": 100.0,
+      "higher_is_better": true,
+      "gate_threshold": 80.0,
+      "gate_op": ">=",
+      "gate_pass": true,
+      "baseline": 100.0,
+      "delta_pct": 0.0
+    },
+    {
+      "key": "cpu_pct_max",
+      "label": "Target CPU peak",
+      "unit": "%",
+      "measured": 173.9,
+      "higher_is_better": false,
+      "gate_threshold": null,
+      "gate_op": "",
+      "gate_pass": true,
+      "baseline": 173.9,
+      "delta_pct": 0.0
+    },
+    {
+      "key": "rss_mb_max",
+      "label": "Target RSS peak",
+      "unit": "MiB",
+      "measured": 50.1875,
+      "higher_is_better": false,
+      "gate_threshold": null,
+      "gate_op": "",
+      "gate_pass": true,
+      "baseline": 50.1875,
+      "delta_pct": 0.0
+    },
+    {
+      "key": "suite_pass_rate",
+      "label": "Suite pass rate",
+      "unit": "%",
+      "measured": 100.0,
+      "higher_is_better": true,
+      "gate_threshold": 95.0,
+      "gate_op": ">=",
+      "gate_pass": true,
+      "baseline": 100.0,
+      "delta_pct": 0.0
+    },
+    {
+      "key": "clean_boot_rate",
+      "label": "Clean boot rate",
+      "unit": "%",
+      "measured": 100.0,
+      "higher_is_better": true,
+      "gate_threshold": 100.0,
+      "gate_op": ">=",
+      "gate_pass": true,
+      "baseline": 100.0,
+      "delta_pct": 0.0
+    }
+  ],
+  "details": {
+    "run_id": 1,
+    "cycle_summary": {
+      "cycles": 50,
+      "clean": 46,
+      "clean_rate": 92.0,
+      "boot_p50": 5245.705,
+      "boot_p95": 5352.07,
+      "boot_max": 7547.345,
+      "items": [
+        {
+          "cycle_id": 1,
+          "run_id": 1,
+          "cycle_index": 1,
+          "clean_boot": 1,
+          "boot_ms": 5234.05,
+          "flash_ms": 0.7065000245347619,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 2,
+          "run_id": 1,
+          "cycle_index": 2,
+          "clean_boot": 1,
+          "boot_ms": 5201.253,
+          "flash_ms": 0.3423329908400774,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 3,
+          "run_id": 1,
+          "cycle_index": 3,
+          "clean_boot": 1,
+          "boot_ms": 5241.678,
+          "flash_ms": 0.33308303682133555,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 4,
+          "run_id": 1,
+          "cycle_index": 4,
+          "clean_boot": 1,
+          "boot_ms": 5276.534,
+          "flash_ms": 0.4442090285010636,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 5,
+          "run_id": 1,
+          "cycle_index": 5,
+          "clean_boot": 1,
+          "boot_ms": null,
+          "flash_ms": null,
+          "fault_spec": "can:FrameLoss"
+        },
+        {
+          "cycle_id": 6,
+          "run_id": 1,
+          "cycle_index": 6,
+          "clean_boot": 1,
+          "boot_ms": 5226.501,
+          "flash_ms": 1.0590830352157354,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 7,
+          "run_id": 1,
+          "cycle_index": 7,
+          "clean_boot": 1,
+          "boot_ms": 5242.893,
+          "flash_ms": 0.36745803663507104,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 8,
+          "run_id": 1,
+          "cycle_index": 8,
+          "clean_boot": 1,
+          "boot_ms": 5296.933,
+          "flash_ms": 0.3632910083979368,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 9,
+          "run_id": 1,
+          "cycle_index": 9,
+          "clean_boot": 1,
+          "boot_ms": 5263.446,
+          "flash_ms": 1.0932500008493662,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 10,
+          "run_id": 1,
+          "cycle_index": 10,
+          "clean_boot": 0,
+          "boot_ms": 4617.073,
+          "flash_ms": null,
+          "fault_spec": "missing:wifi"
+        },
+        {
+          "cycle_id": 11,
+          "run_id": 1,
+          "cycle_index": 11,
+          "clean_boot": 1,
+          "boot_ms": 5177.758,
+          "flash_ms": 0.42804196709766984,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 12,
+          "run_id": 1,
+          "cycle_index": 12,
+          "clean_boot": 1,
+          "boot_ms": 5139.713,
+          "flash_ms": 0.4255409585312009,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 13,
+          "run_id": 1,
+          "cycle_index": 13,
+          "clean_boot": 1,
+          "boot_ms": 5188.537,
+          "flash_ms": 0.7632079650647938,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 14,
+          "run_id": 1,
+          "cycle_index": 14,
+          "clean_boot": 1,
+          "boot_ms": 5245.705,
+          "flash_ms": 0.5350420251488686,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 15,
+          "run_id": 1,
+          "cycle_index": 15,
+          "clean_boot": 1,
+          "boot_ms": null,
+          "flash_ms": null,
+          "fault_spec": "can:StaleSignal"
+        },
+        {
+          "cycle_id": 16,
+          "run_id": 1,
+          "cycle_index": 16,
+          "clean_boot": 1,
+          "boot_ms": 5232.285,
+          "flash_ms": 0.8578330161981285,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 17,
+          "run_id": 1,
+          "cycle_index": 17,
+          "clean_boot": 1,
+          "boot_ms": 5267.032,
+          "flash_ms": 0.5595000111497939,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 18,
+          "run_id": 1,
+          "cycle_index": 18,
+          "clean_boot": 1,
+          "boot_ms": 5352.07,
+          "flash_ms": 0.6487090140581131,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 19,
+          "run_id": 1,
+          "cycle_index": 19,
+          "clean_boot": 1,
+          "boot_ms": 5207.074,
+          "flash_ms": 0.7161659887060523,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 20,
+          "run_id": 1,
+          "cycle_index": 20,
+          "clean_boot": 0,
+          "boot_ms": 5257.827,
+          "flash_ms": null,
+          "fault_spec": "fail:audio"
+        },
+        {
+          "cycle_id": 21,
+          "run_id": 1,
+          "cycle_index": 21,
+          "clean_boot": 1,
+          "boot_ms": 5200.738,
+          "flash_ms": 0.5370409926399589,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 22,
+          "run_id": 1,
+          "cycle_index": 22,
+          "clean_boot": 1,
+          "boot_ms": 5347.702,
+          "flash_ms": 0.4895419697277248,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 23,
+          "run_id": 1,
+          "cycle_index": 23,
+          "clean_boot": 1,
+          "boot_ms": 5281.591,
+          "flash_ms": 0.46204199315980077,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 24,
+          "run_id": 1,
+          "cycle_index": 24,
+          "clean_boot": 1,
+          "boot_ms": 5169.469,
+          "flash_ms": 0.6024999893270433,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 25,
+          "run_id": 1,
+          "cycle_index": 25,
+          "clean_boot": 1,
+          "boot_ms": null,
+          "flash_ms": null,
+          "fault_spec": "can:BadDLC"
+        },
+        {
+          "cycle_id": 26,
+          "run_id": 1,
+          "cycle_index": 26,
+          "clean_boot": 1,
+          "boot_ms": 5308.838,
+          "flash_ms": 0.9272919851355255,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 27,
+          "run_id": 1,
+          "cycle_index": 27,
+          "clean_boot": 1,
+          "boot_ms": 5348.019,
+          "flash_ms": 0.9042919846251607,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 28,
+          "run_id": 1,
+          "cycle_index": 28,
+          "clean_boot": 1,
+          "boot_ms": 5202.686,
+          "flash_ms": 0.5990000208839774,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 29,
+          "run_id": 1,
+          "cycle_index": 29,
+          "clean_boot": 1,
+          "boot_ms": 5177.093,
+          "flash_ms": 0.4232079954817891,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 30,
+          "run_id": 1,
+          "cycle_index": 30,
+          "clean_boot": 0,
+          "boot_ms": 8285.246,
+          "flash_ms": null,
+          "fault_spec": "hang:usb"
+        },
+        {
+          "cycle_id": 31,
+          "run_id": 1,
+          "cycle_index": 31,
+          "clean_boot": 1,
+          "boot_ms": 5222.546,
+          "flash_ms": 0.3322080010548234,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 32,
+          "run_id": 1,
+          "cycle_index": 32,
+          "clean_boot": 1,
+          "boot_ms": 5294.893,
+          "flash_ms": 0.3078749869018793,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 33,
+          "run_id": 1,
+          "cycle_index": 33,
+          "clean_boot": 1,
+          "boot_ms": 5257.348,
+          "flash_ms": 0.4279169952496886,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 34,
+          "run_id": 1,
+          "cycle_index": 34,
+          "clean_boot": 1,
+          "boot_ms": 5252.478,
+          "flash_ms": 0.3457500133663416,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 35,
+          "run_id": 1,
+          "cycle_index": 35,
+          "clean_boot": 1,
+          "boot_ms": null,
+          "flash_ms": null,
+          "fault_spec": "can:SignalOutOfRange"
+        },
+        {
+          "cycle_id": 36,
+          "run_id": 1,
+          "cycle_index": 36,
+          "clean_boot": 1,
+          "boot_ms": 5343.568,
+          "flash_ms": 0.7193749770522118,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 37,
+          "run_id": 1,
+          "cycle_index": 37,
+          "clean_boot": 1,
+          "boot_ms": 5284.008,
+          "flash_ms": 0.40499999886378646,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 38,
+          "run_id": 1,
+          "cycle_index": 38,
+          "clean_boot": 1,
+          "boot_ms": 5334.356,
+          "flash_ms": 0.43966597877442837,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 39,
+          "run_id": 1,
+          "cycle_index": 39,
+          "clean_boot": 1,
+          "boot_ms": 5219.037,
+          "flash_ms": 1.2015000102110207,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 40,
+          "run_id": 1,
+          "cycle_index": 40,
+          "clean_boot": 1,
+          "boot_ms": 7547.345,
+          "flash_ms": null,
+          "fault_spec": "slow_boot"
+        },
+        {
+          "cycle_id": 41,
+          "run_id": 1,
+          "cycle_index": 41,
+          "clean_boot": 1,
+          "boot_ms": 5317.562,
+          "flash_ms": 0.5232499679550529,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 42,
+          "run_id": 1,
+          "cycle_index": 42,
+          "clean_boot": 1,
+          "boot_ms": 5235.261,
+          "flash_ms": 0.3877920098602772,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 43,
+          "run_id": 1,
+          "cycle_index": 43,
+          "clean_boot": 1,
+          "boot_ms": 5218.017,
+          "flash_ms": 0.8509170147590339,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 44,
+          "run_id": 1,
+          "cycle_index": 44,
+          "clean_boot": 1,
+          "boot_ms": 5344.696,
+          "flash_ms": 0.47841703053563833,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 45,
+          "run_id": 1,
+          "cycle_index": 45,
+          "clean_boot": 1,
+          "boot_ms": null,
+          "flash_ms": null,
+          "fault_spec": "can:BusSilence"
+        },
+        {
+          "cycle_id": 46,
+          "run_id": 1,
+          "cycle_index": 46,
+          "clean_boot": 1,
+          "boot_ms": 5328.361,
+          "flash_ms": 1.0957090416923165,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 47,
+          "run_id": 1,
+          "cycle_index": 47,
+          "clean_boot": 1,
+          "boot_ms": 5356.383,
+          "flash_ms": 0.6477090064436197,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 48,
+          "run_id": 1,
+          "cycle_index": 48,
+          "clean_boot": 1,
+          "boot_ms": 5224.757,
+          "flash_ms": 0.49000000581145287,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 49,
+          "run_id": 1,
+          "cycle_index": 49,
+          "clean_boot": 1,
+          "boot_ms": 5222.081,
+          "flash_ms": 1.0805409983731806,
+          "fault_spec": ""
+        },
+        {
+          "cycle_id": 50,
+          "run_id": 1,
+          "cycle_index": 50,
+          "clean_boot": 0,
+          "boot_ms": 4791.091,
+          "flash_ms": null,
+          "fault_spec": "missing:camera"
+        }
+      ]
+    },
+    "suite": {
+      "suite": "all",
+      "markers": "hil and sim",
+      "exit_code": 0,
+      "tests": 46,
+      "passed": 46,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "pass_rate": 100.0,
+      "time_s": 84.508,
+      "cases": [
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_boot_chain_is_clean",
+          "status": "passed",
+          "duration_s": 1.812,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_all_expected_drivers_probed",
+          "status": "passed",
+          "duration_s": 2.377,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_boot_time_within_gate",
+          "status": "passed",
+          "duration_s": 2.369,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_each_driver_init_within_gate",
+          "status": "passed",
+          "duration_s": 2.379,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_repeated_power_cycles_are_clean",
+          "status": "passed",
+          "duration_s": 7.082,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_injected_missing_driver_is_detected",
+          "status": "passed",
+          "duration_s": 1.804,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_injected_failed_probe_is_detected",
+          "status": "passed",
+          "duration_s": 1.856,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_injected_driver_hang_is_detected",
+          "status": "passed",
+          "duration_s": 1.837,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_boot.test_boot_cycle::test_injected_slow_boot_is_slower",
+          "status": "passed",
+          "duration_s": 1.841,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_can.test_can_suite::test_receives_all_message_types",
+          "status": "passed",
+          "duration_s": 1.865,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_can.test_can_suite::test_decoded_signal_values_in_range",
+          "status": "passed",
+          "duration_s": 1.858,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_can.test_can_suite::test_vehicle_speed_periodicity",
+          "status": "passed",
+          "duration_s": 1.855,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_can.test_can_suite::test_round_trip_specific_signals",
+          "status": "passed",
+          "duration_s": 1.225,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_can.test_can_suite::test_no_frame_loss_on_clean_bus",
+          "status": "passed",
+          "duration_s": 1.87,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_can.test_can_suite::test_diagnostic_response",
+          "status": "passed",
+          "duration_s": 0.413,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_ping",
+          "status": "passed",
+          "duration_s": 1.985,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_sysinfo_keys",
+          "status": "passed",
+          "duration_s": 2.407,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_set_get_roundtrip",
+          "status": "passed",
+          "duration_s": 2.38,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_unknown_key_errors",
+          "status": "passed",
+          "duration_s": 2.349,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_latency_is_measured",
+          "status": "passed",
+          "duration_s": 2.363,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_serial_shell_echo",
+          "status": "passed",
+          "duration_s": 2.601,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_serial_shell_sysinfo",
+          "status": "passed",
+          "duration_s": 2.365,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_serial_shell_reports_unknown_command",
+          "status": "passed",
+          "duration_s": 2.349,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_stress_memory_grows_rss",
+          "status": "passed",
+          "duration_s": 2.159,
+          "message": ""
+        },
+        {
+          "name": "tests.suite_io.test_io_suite::test_tcp_stress_cpu_burns_cpu",
+          "status": "passed",
+          "duration_s": 4.31,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_validate_boot_classification[boot_good.log-True-missing0-failed0-timedout0]",
+          "status": "passed",
+          "duration_s": 0.005,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_validate_boot_classification[boot_missing.log-False-missing1-failed1-timedout1]",
+          "status": "passed",
+          "duration_s": 0.003,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_validate_boot_classification[boot_fail.log-False-missing2-failed2-timedout2]",
+          "status": "passed",
+          "duration_s": 0.004,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_validate_boot_classification[boot_hang.log-False-missing3-failed3-timedout3]",
+          "status": "passed",
+          "duration_s": 0.004,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_validate_boot_classification[boot_corrupt.log-False-missing4-failed4-timedout4]",
+          "status": "passed",
+          "duration_s": 0.003,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_slow_boot_over_gate",
+          "status": "passed",
+          "duration_s": 0.003,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_good_boot_reports_stage_and_driver_timings",
+          "status": "passed",
+          "duration_s": 0.003,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_c_and_python_parsers_agree",
+          "status": "passed",
+          "duration_s": 0.01,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_python_parser_tolerates_garbage",
+          "status": "passed",
+          "duration_s": 0.0,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_c_bootprobe_binary_emits_json",
+          "status": "passed",
+          "duration_s": 0.003,
+          "message": ""
+        },
+        {
+          "name": "tests.test_boot_validation::test_c_bootprobe_nonzero_exit_on_malformed",
+          "status": "passed",
+          "duration_s": 0.003,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_dbc_decode_roundtrip_every_signal",
+          "status": "passed",
+          "duration_s": 0.004,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_periodicity_under_load",
+          "status": "passed",
+          "duration_s": 2.262,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_diagnostic_request_response",
+          "status": "passed",
+          "duration_s": 0.417,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_each_fault_type_is_detected[drop_rate]",
+          "status": "passed",
+          "duration_s": 2.519,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_each_fault_type_is_detected[stale_signal]",
+          "status": "passed",
+          "duration_s": 2.481,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_each_fault_type_is_detected[bad_dlc]",
+          "status": "passed",
+          "duration_s": 2.461,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_each_fault_type_is_detected[out_of_range]",
+          "status": "passed",
+          "duration_s": 2.477,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_each_fault_type_is_detected[silence_ms]",
+          "status": "passed",
+          "duration_s": 2.491,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_fault_detection_rate_is_complete",
+          "status": "passed",
+          "duration_s": 9.312,
+          "message": ""
+        },
+        {
+          "name": "tests.test_can_traffic::test_clean_stream_has_no_faults",
+          "status": "passed",
+          "duration_s": 2.276,
+          "message": ""
+        }
+      ]
+    },
+    "driver_init_by_driver": {
+      "display": {
+        "count": 40,
+        "p50": 140.5765,
+        "p95": 144.98915,
+        "mean": 140.71045,
+        "max": 145.598
+      },
+      "audio": {
+        "count": 40,
+        "p50": 210.6715,
+        "p95": 216.2348,
+        "mean": 209.95899999999997,
+        "max": 217.275
+      },
+      "bt": {
+        "count": 40,
+        "p50": 330.5085,
+        "p95": 342.3722,
+        "mean": 330.51529999999997,
+        "max": 342.699
+      },
+      "wifi": {
+        "count": 40,
+        "p50": 541.646,
+        "p95": 559.0605,
+        "mean": 541.7232499999999,
+        "max": 561.589
+      },
+      "usb": {
+        "count": 40,
+        "p50": 93.84649999999999,
+        "p95": 98.42914999999999,
+        "mean": 94.621925,
+        "max": 98.695
+      },
+      "camera": {
+        "count": 40,
+        "p50": 410.19,
+        "p95": 425.7547,
+        "mean": 409.96035,
+        "max": 426.306
+      }
+    }
+  }
+}

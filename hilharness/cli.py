@@ -6,6 +6,7 @@ import json
 import statistics
 import sys
 import time
+from pathlib import Path
 
 import click
 
@@ -320,6 +321,139 @@ def run(suite: str, config: str, markers: str, junit: str, json_out: str) -> Non
     click.echo(f"junit      : {junit}")
     click.echo(f"json       : {json_out}")
     raise SystemExit(code)
+
+
+@main.command()
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--cycles", default=50, show_default=True, type=int)
+@click.option("--can-load", default=0.8, show_default=True, type=float)
+@click.option("--stress", default=0.7, show_default=True, type=float)
+def soak(config: str, cycles: int, can_load: float, stress: float) -> None:
+    """Run a full soak: flash -> power-cycle -> boot -> CAN -> IO, N times."""
+    from .soak import run_soak
+
+    cfg = _load(config)
+    click.echo(f"soak: {cycles} cycles on rig {cfg.name!r} ...")
+    t0 = time.perf_counter()
+    summary = run_soak(cfg, cycles, can_load_s=can_load, stress_s=stress)
+    wall = time.perf_counter() - t0
+    click.echo("-" * 64)
+    click.echo(f"run_id            : {summary['run_id']}")
+    click.echo(f"cycles            : {summary['cycles']}")
+    click.echo(
+        f"clean boots       : {summary['clean']}/{summary['cycles']} " f"({summary['clean_rate']}%)"
+    )
+    click.echo(
+        f"boot p50/p95/max  : {summary['boot_ms_p50']:.1f} / "
+        f"{summary['boot_ms_p95']:.1f} / {summary['boot_ms_max']:.1f} ms"
+    )
+    click.echo(f"driver init p95   : {summary['driver_init_ms_p95']:.1f} ms")
+    click.echo(f"CAN loss max      : {summary['can_frame_loss_pct_max']:.3f}%")
+    click.echo(f"CAN jitter max    : {summary['can_period_jitter_ms_max']:.2f} ms")
+    click.echo(
+        f"CPU/RSS peak      : {summary['cpu_pct_max']:.1f}% / " f"{summary['rss_mb_max']:.1f} MiB"
+    )
+    click.echo(f"IO pass rate      : {summary['io_pass_rate']:.1f}%")
+    click.echo(
+        f"fault detection   : {summary['faults_detected']}/"
+        f"{summary['faults_injected']} ({summary['fault_detection_pct']:.0f}%)"
+    )
+    click.echo(f"soak wall clock   : {wall:.1f} s")
+
+
+@main.command()
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--regression-pct", default=10.0, show_default=True, type=float)
+@click.option("--baseline", default="reports/baseline.json", show_default=True)
+@click.option("--run-id", default=None, type=int)
+def report(config: str, regression_pct: float, baseline: str, run_id: int | None) -> None:
+    """Build the release-readiness report; exit nonzero when a gate fails."""
+    from .report.release import build_report
+
+    cfg = _load(config)
+    rep, code = build_report(
+        cfg, baseline_path=baseline, regression_pct=regression_pct, run_id=run_id
+    )
+    click.echo(f"{'metric':<24}{'measured':>14}{'gate':>18}  result")
+    for r in rep["metrics"]:
+        gate = (
+            "informational"
+            if r["gate_threshold"] is None
+            else (f"{r['gate_op']} {r['gate_threshold']:g} {r['unit']}")
+        )
+        result = "PASS" if r["gate_pass"] else ("FAIL" if r["gate_threshold"] is not None else "-")
+        click.echo(f"{r['label']:<24}{r['measured']:>10.2f} {r['unit']:<3}{gate:>18}  {result}")
+    if rep["regressions"]:
+        click.echo("regressions:")
+        for o in rep["regressions"]:
+            click.echo(
+                f"  {o['metric']}: {o['baseline']:.2f} -> {o['current']:.2f} "
+                f"({o['delta_pct']:+.1f}%)"
+            )
+    else:
+        click.echo("regressions: none")
+    click.echo(f"verdict: {rep['verdict']}")
+    click.echo("wrote reports/release_readiness.md and .json")
+    raise SystemExit(code)
+
+
+@main.command("baseline-update")
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--baseline", default="reports/baseline.json", show_default=True)
+@click.option("--run-id", default=None, type=int)
+def baseline_update(config: str, baseline: str, run_id: int | None) -> None:
+    """Store the current measured metrics as the regression baseline."""
+    from .report.release import build_baseline
+
+    cfg = _load(config)
+    base = build_baseline(cfg, baseline_path=baseline, run_id=run_id)
+    click.echo(f"baseline updated ({len(base['metrics'])} metrics) -> {baseline}")
+
+
+@main.command()
+@click.option("--config", default=DEFAULT_CONFIG, show_default=True)
+@click.option("--out", default="results/hil_metrics.prom", show_default=True)
+@click.option("--pushgateway", default=None, help="Pushgateway URL (optional)")
+def prom(config: str, out: str, pushgateway: str | None) -> None:
+    """Write (and optionally push) Prometheus gauges from the latest run."""
+    import json as _json
+
+    from .metrics.prom import push_to_gateway, write_textfile
+    from .metrics.store import MetricsStore
+
+    store = MetricsStore("results/hil.db")
+    run_id = store.last_run_id()
+    summary = store.cycle_summary(run_id) if run_id is not None else {}
+    non_fault = [c for c in summary.get("items", []) if not c.get("fault_spec")]
+    clean_rate = (
+        100.0 * sum(1 for c in non_fault if c["clean_boot"]) / len(non_fault) if non_fault else 0.0
+    )
+    gauge = lambda m, a="max": store.stats(m, run_id)[a]  # noqa: E731
+    suite_rate = 0.0
+    if Path("results/hil_results.json").exists():
+        suite_rate = float(
+            _json.loads(Path("results/hil_results.json").read_text()).get("pass_rate", 0.0)
+        )
+    gauges = {
+        "hil_boot_ms_p50": summary.get("boot_p50", 0.0),
+        "hil_boot_ms_p95": summary.get("boot_p95", 0.0),
+        "hil_driver_init_ms_p95": gauge("driver_init_ms", "p95"),
+        "hil_can_frame_loss_pct": gauge("can_frame_loss_pct"),
+        "hil_cpu_pct_max": gauge("cpu_pct_max"),
+        "hil_rss_mb_max": gauge("rss_mb_max"),
+        "hil_suite_pass_rate": suite_rate,
+        "hil_clean_boot_rate": clean_rate,
+        "hil_fault_detection_pct": gauge("fault_detection_pct"),
+    }
+    for driver, st in store.tag_values("driver_init_ms", "driver", run_id).items():
+        gauges[f'hil_driver_init_ms_p95{{driver="{driver}"}}'] = st.get("p95", 0.0)
+    store.close()
+    text = write_textfile(gauges, out)
+    click.echo(text)
+    click.echo(f"wrote {out}")
+    if pushgateway:
+        push_to_gateway(gauges, pushgateway)
+        click.echo(f"pushed to {pushgateway}")
 
 
 @main.command("show-config")

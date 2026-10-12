@@ -1,0 +1,168 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Boot time (p50 / p95) [ms]",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": []
+      },
+      "targets": [
+        { "refId": "A", "expr": "hil_boot_ms_p50", "legendFormat": "p50" },
+        { "refId": "B", "expr": "hil_boot_ms_p95", "legendFormat": "p95" }
+      ],
+      "alert": {
+        "name": "boot_ms_p95_gate",
+        "message": "Boot time p95 breached the 15000 ms gate",
+        "frequency": "1m",
+        "conditions": [
+          {
+            "evaluator": { "type": "gt", "params": [15000] },
+            "operator": { "type": "and" },
+            "query": { "params": ["B", "5m", "now"] },
+            "reducer": { "type": "last", "params": [] },
+            "type": "query"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Driver init latency p95 by driver [ms]",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "custom": { "lineWidth": 2 } },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "hil_driver_init_ms_p95",
+          "legendFormat": "{{driver}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "CAN frame loss [%]",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "custom": { "lineWidth": 2, "fillOpacity": 20 } },
+        "overrides": []
+      },
+      "targets": [{ "refId": "A", "expr": "hil_can_frame_loss_pct", "legendFormat": "loss" }],
+      "alert": {
+        "name": "can_frame_loss_gate",
+        "message": "CAN frame loss above the 1% gate",
+        "frequency": "1m",
+        "conditions": [
+          {
+            "evaluator": { "type": "gt", "params": [1] },
+            "operator": { "type": "and" },
+            "query": { "params": ["A", "5m", "now"] },
+            "reducer": { "type": "last", "params": [] },
+            "type": "query"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Target CPU / RSS under load",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "fieldConfig": { "defaults": { "custom": { "lineWidth": 2 } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "hil_cpu_pct_max", "legendFormat": "cpu %" },
+        { "refId": "B", "expr": "hil_rss_mb_max", "legendFormat": "rss MiB" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Suite pass rate [%]",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 4, "x": 16, "y": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 95 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{ "refId": "A", "expr": "hil_suite_pass_rate" }]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Clean boot rate [%]",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 100 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{ "refId": "A", "expr": "hil_clean_boot_rate" }]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Fault detection rate [%]",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 80 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [{ "refId": "A", "expr": "hil_fault_detection_pct" }]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["hil", "embedded", "release-gates"],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "HIL Overview",
+  "uid": "hil-overview",
+  "version": 1
+}
