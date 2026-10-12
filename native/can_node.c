@@ -55,6 +55,13 @@ static double now_s(void) {
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
+static void sleep_us(long us) {
+    struct timespec ts;
+    ts.tv_sec = us / 1000000L;
+    ts.tv_nsec = (us % 1000000L) * 1000L;
+    nanosleep(&ts, NULL);
+}
+
 /* Little-endian (Intel/start-bit) signal packing into a CAN payload. */
 static void set_signal(uint8_t *data, int start, int len, uint32_t value) {
     for (int i = 0; i < len; i++) {
@@ -222,7 +229,7 @@ int main(int argc, char **argv) {
             if (write(s, &frame, sizeof(frame)) < 0)
                 perror("write");
         }
-        usleep(500);
+        sleep_us(500);
     }
 
     close(s);

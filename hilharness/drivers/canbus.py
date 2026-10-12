@@ -11,9 +11,11 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import cast
 
 import can
 import cantools
+from cantools.database.can.database import Database as CanDatabase
 
 from ..config import CanConfig
 
@@ -41,7 +43,7 @@ class CanFrame:
 class CanBus:
     def __init__(self, cfg: CanConfig) -> None:
         self.cfg = cfg
-        self.dbc = cantools.database.load_file(str(cfg.dbc_path))
+        self.dbc = cast(CanDatabase, cantools.database.load_file(str(cfg.dbc_path)))
         self.backend, self.bus = self._open()
 
     @property

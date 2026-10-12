@@ -68,7 +68,7 @@ def parse_with_python(transcript: str) -> dict:
     failed: list[str] = []
     timedout: list[str] = []
     faults: list[str] = []
-    t = {"bootloader": None, "kernel": None, "userspace": None}
+    t: dict[str, float | None] = {"bootloader": None, "kernel": None, "userspace": None}
     has_ready = False
     t_ready = 0.0
     first_ts = None

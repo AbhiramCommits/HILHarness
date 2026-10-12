@@ -212,7 +212,8 @@ def run(
 
     def _shutdown(signum, frame):  # noqa: ANN001
         try:
-            server.shutdown()
+            if server is not None:
+                server.shutdown()
         except Exception:
             pass
         sys.exit(0)

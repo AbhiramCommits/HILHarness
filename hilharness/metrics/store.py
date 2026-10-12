@@ -92,7 +92,7 @@ class MetricsStore:
                 (kind, _utcnow(), git_sha, notes),
             )
             self.conn.commit()
-            return int(cur.lastrowid)
+            return int(cur.lastrowid or 0)
 
     def finish_run(self, run_id: int) -> None:
         with self._lock:
@@ -112,7 +112,10 @@ class MetricsStore:
                     "SELECT run_id FROM runs WHERE finished_at IS NOT NULL "
                     "ORDER BY run_id DESC LIMIT 1"
                 ).fetchone()
-        return int(row["run_id"]) if row else None
+        if row is None:
+            return None
+        run_id = row["run_id"]
+        return int(run_id) if run_id is not None else None
 
     def run_info(self, run_id: int) -> dict:
         with self._lock:

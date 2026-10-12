@@ -37,6 +37,10 @@ FIXED_GATES = {
 
 DIRECTIONS = {spec[0]: spec[3] for spec in METRIC_SPECS}
 
+# Host-dependent, non-gated metrics are reported but excluded from regression
+# checks so CI on a different machine does not produce spurious NO-GOs.
+REGRESSION_EXCLUDE = {"cpu_pct_max", "rss_mb_max"}
+
 
 def _gate_for(key: str, cfg: RigConfig) -> tuple[float, str] | None:
     if key in FIXED_GATES:
@@ -145,7 +149,7 @@ def build_report(
         )
 
     offenders = check_regressions(
-        {k: v for k, v in values.items()},
+        {k: v for k, v in values.items() if k not in REGRESSION_EXCLUDE},
         baseline,
         directions=DIRECTIONS,
         threshold_pct=regression_pct,

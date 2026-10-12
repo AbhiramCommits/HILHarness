@@ -72,3 +72,9 @@ python_version = "3.11"
 ignore_missing_imports = true
 warn_unused_ignores = false
 check_untyped_defs = true
+
+# The simulated target leans on untyped third-party CAN/cantools APIs; the CLI
+# is glue code. Keep mypy signal focused on the harness core.
+[[tool.mypy.overrides]]
+module = ["simtarget.*", "hilharness.cli"]
+ignore_errors = true

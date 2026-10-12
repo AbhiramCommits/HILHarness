@@ -23,11 +23,12 @@ test:
 	$(PYTEST) -m "hil and sim" -q
 
 cov:
-	$(PYTEST) -m "hil and sim" --cov=hilharness --cov-report=term-missing
+	$(PYTEST) -m "hil and sim" --cov=hilharness --cov-report=term-missing --cov-fail-under=80
 
 lint:
 	$(PYTHON) -m ruff check hilharness simtarget tests scripts
 	$(PYTHON) -m black --check hilharness simtarget tests scripts
+	$(PYTHON) -m mypy hilharness simtarget
 
 format:
 	$(PYTHON) -m ruff check --fix hilharness simtarget tests scripts
