@@ -11,6 +11,9 @@
 #if defined(__linux__)
 
 #define _POSIX_C_SOURCE 200809L
+/* struct ifreq / IFNAMSIZ in <net/if.h> are BSD/misc extensions that glibc
+ * hides under a strict _POSIX_C_SOURCE; _DEFAULT_SOURCE re-exposes them. */
+#define _DEFAULT_SOURCE
 
 #include <errno.h>
 #include <linux/can.h>
@@ -172,7 +175,8 @@ int main(int argc, char **argv) {
                 tx.data[3] = 0x12;
                 tx.data[4] = 0x34;
                 tx.data[5] = rx.data[3];
-                (void)write(s, &tx, sizeof(tx));
+                if (write(s, &tx, sizeof(tx)) != (ssize_t)sizeof(tx))
+                    perror("write diag response");
             }
         }
 
